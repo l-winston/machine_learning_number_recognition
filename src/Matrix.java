@@ -1,38 +1,44 @@
+import javax.print.attribute.standard.PrinterLocation;
 
 public class Matrix {
 	int[][] matrix;
 	int columns;
 	int rows;
+
 	public static void main(String[] args) {
-		int[][] content = new int[5][2];
-		content[3][1] = 5;
-		int[][] con = new int[7][2];
-		con[2][1] = 5;
-		Matrix c = new Matrix(con);
-		Matrix m = new Matrix(content);
-		System.out.println(m);
-		m = m.add(c);
-		System.out.println(m);
+		Matrix a = new Matrix(new int[][]{
+			  { 1, 2 },
+			  { 3, 4 }
+		});
+		Matrix b = new Matrix(new int[][]{
+			  { 2, 0 },
+			  { 1, 2 }
+		});
+		System.out.println(a.multiply(b));
 	}
-	
-	public Matrix (int[][] matrix){
+
+	public Matrix(int[][] matrix) {
 		this.matrix = matrix;
 		this.rows = matrix.length;
 		this.columns = matrix[0].length;
 	}
-	public int[][] getMatrix(){
+
+	public int[][] getMatrix() {
 		return matrix;
 	}
-	public int getWidth(){
+
+	public int getWidth() {
 		return columns;
 	}
-	public int getHeight(){
+
+	public int getHeight() {
 		return rows;
 	}
-	public String toString(){
+
+	public String toString() {
 		StringBuilder str = new StringBuilder();
-		for(int i = 0; i < rows; i++){
-			for(int j = 0; j < columns; j++){
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				str.append(matrix[i][j] + " ");
 			}
 			str.append('\n');
@@ -40,21 +46,38 @@ public class Matrix {
 		String ret = str.toString();
 		return ret;
 	}
-	public Matrix add(Matrix m){
-		if(columns != m.columns || rows != m.rows){
+
+	public Matrix add(Matrix m) {
+		if (columns != m.columns || rows != m.rows) {
 			throw new IllegalArgumentException("Dimenstions are different");
 		}
 		int[][] ret = new int[rows][columns];
-		for(int i = 0; i < rows; i++){
-			for(int j = 0; j < columns; j++){
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				ret[i][j] = matrix[i][j] + m.getMatrix()[i][j];
 			}
 		}
 		return new Matrix(ret);
 	}
+
 	public Matrix multiply(Matrix m){
-		
-		return null;
+		if (columns != m.rows) {
+			throw new IllegalArgumentException("Matrix A.columns =/= Matrix B.rows");
+		}
+		int[][] ret = new int[this.rows][m.columns];
+		for (int i = 0; i < this.rows; i++) {
+			for (int j = 0; j < m.columns; j++) {
+				int x = 0;
+				for (int col = 0; col < this.columns; col++) {
+					for (int row = 0; row < m.rows; row++) {
+						x += matrix[i][col] * m.matrix[row][j];
+					}
+				}
+				ret[i][j] = x;
+			}
+		}
+
+		return new Matrix(ret);
 	}
-			
+
 }
