@@ -1,7 +1,13 @@
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.Random;
+import java.util.Scanner;
 
 public class NeuralNet {
 
@@ -27,6 +33,49 @@ public class NeuralNet {
 		this.outputBiases = outputBiases;
 	}
 
+	public static NeuralNet generate() throws IOException{
+		//String outFileName = "startingNet.in";
+		//PrintWriter out = null;
+		Scanner scan = new Scanner(new File("startingNet.in"));
+		
+		double[][] layer1Weights = new double[28*28][16];
+    	double[] layer1Biases = new double[16];
+    	double[][] layer2Weights = new double[16][16];
+    	double[] layer2Biases = new double[16];
+    	double[][] outputWeights = new double[16][10];
+    	double[] outputBiases = new double[10];
+    	
+    	Random rand = new Random();
+    	
+    	for(int j = 0; j < 28*28; j++){
+    		for(int k = 0; k < 16; k++){
+    			layer1Weights[j][k] = scan.nextDouble();
+    		}
+    	}
+    	for(int j = 0; j < 16; j++){
+    		layer1Biases[j] = scan.nextDouble();
+    	}
+    	for(int j = 0; j < 16; j++){
+    		for(int k = 0; k < 16; k++){
+    			layer2Weights[j][k] = scan.nextDouble();
+    		}
+    	}
+    	for(int j = 0; j < 16; j++){
+    		layer2Biases[j] = scan.nextDouble();
+    	}
+    	for(int j = 0; j < 16; j++){
+    		for(int k = 0; k < 10; k++){
+    			outputWeights[j][k] = scan.nextDouble();
+    		}
+    	}
+    	for(int j = 0; j < 10; j++){
+    		outputBiases[j] = scan.nextDouble();
+    	}
+    	scan.close();
+    	
+    	return new NeuralNet(layer1Weights, layer1Biases, layer2Weights, layer2Biases, outputWeights, outputBiases);
+	}
+	
 	public static double calculateCost(BufferedImage image, int label) {
 		for (int i = 0; i < 28; i++) {
 			for (int j = 0; j < 28; j++) {

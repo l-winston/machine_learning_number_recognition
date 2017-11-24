@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 
 public class IdxReader {
 
+	public final static int BATCH_SIZE = 500;
+	
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         FileInputStream inImage = null;
@@ -45,8 +47,22 @@ public class IdxReader {
             int numberOfPixels = numberOfRows * numberOfColumns;
             int[] imgPixels = new int[numberOfPixels];
 
+            double avgCost = 0;
+            
+            int batchInterval = BATCH_SIZE;
+            
+            NeuralNet net = NeuralNet.generate();
+            
             for(int i = 0; i < numberOfImages; i++) {
-
+            	
+            	if(i > batchInterval){
+            		avgCost /= BATCH_SIZE;
+                    System.out.println(avgCost);
+                    batchInterval += BATCH_SIZE;
+                    //write code here : 
+                    //change net to updated version using gradient descent
+            	}
+            	
                 if(i % 100 == 0) {System.out.println("Number of images extracted: " + i);}
 
                 for(int p = 0; p < numberOfPixels; p++) {
@@ -73,43 +89,11 @@ public class IdxReader {
                 	}
                 	//System.out.println();
                 }
-            	double[][] layer1Weights = new double[28*28][16];
-            	double[] layer1Biases = new double[16];
-            	double[][] layer2Weights = new double[16][16];
-            	double[] layer2Biases = new double[16];
-            	double[][] outputWeights = new double[16][10];
-            	double[] outputBiases = new double[10];
             	
-            	Random rand = new Random();
+            	avgCost += net.calculateCost(image, label);
             	
-            	for(int j = 0; j < 28*28; j++){
-            		for(int k = 0; k < 16; k++){
-            			layer1Weights[j][k] = rand.nextDouble()*50 - 25; 
-            		}
-            	}
-            	for(int j = 0; j < 16; j++){
-            		layer1Biases[j] = rand.nextDouble()*50 - 25;
-            	}
-            	for(int j = 0; j < 16; j++){
-            		for(int k = 0; k < 16; k++){
-            			layer2Weights[j][k] = rand.nextDouble()*50 - 25;
-            		}
-            	}
-            	for(int j = 0; j < 16; j++){
-            		layer2Biases[j] = rand.nextDouble()*50 - 25;
-            	}
-            	for(int j = 0; j < 16; j++){
-            		for(int k = 0; k < 10; k++){
-            			outputWeights[j][k] = rand.nextDouble()*50 - 25;
-            		}
-            	}
-            	for(int j = 0; j < 10; j++){
-            		outputBiases[j] = rand.nextDouble()*50 - 25;
-            	}
-                System.out.println(new NeuralNet(layer1Weights, layer1Biases, layer2Weights, layer2Biases, outputWeights, outputBiases).calculateCost(image, label));
                 //System.out.println(new NeuralNet(new double[28*28][16], new double[16], new double[16][16], new double[16], new double[16][10], new double[10]).calculateCost(image, label));
 
-                
             }
 
         } catch (FileNotFoundException e) {
