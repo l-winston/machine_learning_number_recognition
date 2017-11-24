@@ -3,18 +3,6 @@ public class Matrix {
 	int columns;
 	int rows;
 
-	public static void main(String[] args) {
-		int[][] content = new int[5][2];
-		content[3][1] = 5;
-		int[][] con = new int[7][2];
-		con[2][1] = 5;
-		Matrix c = new Matrix(con);
-		Matrix m = new Matrix(content);
-		System.out.println(m);
-		m = m.add(c);
-		System.out.println(m);
-	}
-
 	public Matrix(int[][] matrix) {
 		this.matrix = matrix;
 		this.rows = matrix.length;

@@ -17,10 +17,6 @@ public class NeuralNet {
 	public static double[][] outputWeights = new double[layer2.length][output.length];
 	public static double[] outputBiases = new double[output.length];
 
-	public static void main(String[] args) {
-
-	}
-
 	public NeuralNet(double[][] layer1Weights, double[] layer1Biases, double[][] layer2Weights, double[] layer2Biases,
 			double[][] outputWeights, double[] outputBiases) {
 		this.layer1Weights = layer1Weights;
