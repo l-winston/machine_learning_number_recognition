@@ -117,6 +117,10 @@ public class NeuralNet {
 		}
 		return cost;
 	}
+	
+	public static NetworkChange findChange (double cost){
+		return null;
+	}
 
 	public static double sigmoid(double d) {
 		if (d > 5)
