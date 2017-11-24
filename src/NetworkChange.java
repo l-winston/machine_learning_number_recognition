@@ -18,7 +18,18 @@ public class NetworkChange {
 	public NetworkChange (){
 		
 	}
+	
+
+	
 	public static NetworkChange add(NetworkChange nc){
-		return null;
+
+		return new NetworkChange(
+				new Matrix(layer1Weights).add(new Matrix(nc.layer1Weights)).get2DArray(),
+				Matrix.toMatrix(layer1Biases).add(Matrix.toMatrix(nc.layer1Biases)).get2DArray()[0],
+				new Matrix(layer2Weights).add(new Matrix(nc.layer2Weights)).get2DArray(),
+				Matrix.toMatrix(layer2Biases).add(Matrix.toMatrix(nc.layer2Biases)).get2DArray()[0],
+				new Matrix(outputWeights).add(new Matrix(nc.outputWeights)).get2DArray(),
+				Matrix.toMatrix(outputBiases).add(Matrix.toMatrix(nc.outputBiases)).get2DArray()[0]
+				);
 	}
 }

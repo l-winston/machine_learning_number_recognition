@@ -74,7 +74,7 @@ public class NeuralNet {
     	return new NeuralNet(layer1Weights, layer1Biases, layer2Weights, layer2Biases, outputWeights, outputBiases);
 	}
 	
-	public static double calculateCost(BufferedImage image, int label) {
+	public static double[] calculateCost(BufferedImage image, int label) {
 		for (int i = 0; i < 28; i++) {
 			for (int j = 0; j < 28; j++) {
 				Color c = new Color(image.getRGB(j, i));
@@ -108,18 +108,28 @@ public class NeuralNet {
 		}
 		
 		// calculate cost based on outputs vs. actual answer
-		double cost = 0;
+		double cost[] = new double[output.length];
 		for (int i = 0; i < output.length; i++) {
 			if (i == label)
-				cost += Math.pow((output[i] - 1), 2);
+				cost[i] = Math.pow((output[i] - 1), 2);
 			else
-				cost += Math.pow((output[i] - 0), 2);
+				cost[i] = Math.pow((output[i] - 0), 2);
 		}
 		return cost;
 	}
 	
-	public static NetworkChange findChange (double cost){
+	public static NetworkChange findChange (double[] cost){
 		return null;
+	}
+	
+	public static void applyStep (NetworkChange nc){
+		layer1Weights = (new Matrix(layer1Weights).add(new Matrix(nc.layer1Weights))).get2DArray();
+		layer1Biases = (Matrix.toMatrix(layer1Biases).add(Matrix.toMatrix(nc.layer1Biases))).get1DArray();
+		layer2Weights = (new Matrix(layer2Weights).add(new Matrix(nc.layer2Weights))).get2DArray();
+		layer2Biases = (Matrix.toMatrix(layer2Biases).add(Matrix.toMatrix(nc.layer2Biases))).get1DArray();
+		outputWeights = (new Matrix(outputWeights).add(new Matrix(nc.outputWeights))).get2DArray();
+		outputBiases = (Matrix.toMatrix(outputBiases).add(Matrix.toMatrix(nc.outputBiases))).get1DArray();
+
 	}
 
 	public static double sigmoid(double d) {

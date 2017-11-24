@@ -52,7 +52,7 @@ public class IdxReader {
 			int numberOfPixels = numberOfRows * numberOfColumns;
 			int[] imgPixels = new int[numberOfPixels];
 
-			double avgCost = 0;
+			//double avgCost = 0;
 
 			int batchInterval = BATCH_SIZE;
 
@@ -62,14 +62,13 @@ public class IdxReader {
 			for (int i = 0; i < numberOfImages; i++) {
 				
 				//after a batch is completed, find average, calculate where the next batch ends, and reset average back to 0
-				if (i > batchInterval) {
-					avgCost /= BATCH_SIZE;
-					System.out.println(avgCost);
+				if (i == batchInterval) {
+					//avgCost /= BATCH_SIZE;
+					//System.out.println(avgCost);
 					batchInterval += BATCH_SIZE;
-					avgCost = 0;
+					//avgCost = 0;
 					batchStep = new NetworkChange();
-					// NEED TO DO : change net to updated version using gradient descent
-					// NEED TO DO : apply batchStep
+					net.applyStep(batchStep);
 				}
 
 				if (i % 100 == 0) {
@@ -82,7 +81,7 @@ public class IdxReader {
 				}
 
 				image.setRGB(0, 0, numberOfColumns, numberOfRows, imgPixels, 0, numberOfColumns);
-
+				ArrayList al = new ArrayList();
 				int label = inLabel.read();
 				hashMap[label]++;
 				
@@ -93,7 +92,7 @@ public class IdxReader {
 				
 				batchStep = batchStep.add(NeuralNet.findChange(net.calculateCost(image, label)));
 				
-				avgCost += net.calculateCost(image, label);
+				//avgCost += net.calculateCost(image, label);
 
 			}
 
