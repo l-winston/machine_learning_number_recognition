@@ -27,7 +27,6 @@ public class IdxReader {
 		frame.setVisible(true);
 		frame.setSize(new java.awt.Dimension(200, 200));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// exit when frame
-        //String outputPath = "/Users/cs/png";
 
         int[] hashMap = new int[10]; 
 
@@ -85,14 +84,10 @@ public class IdxReader {
                 for(int k = 0; k < 28; k++){
                 	for(int j = 0; j < 28; j++){
                         Color c = new Color(image.getRGB(j, k));
-                        //System.out.print((255 - c.getRed()) + "\t");
                 	}
-                	//System.out.println();
                 }
             	
             	avgCost += net.calculateCost(image, label);
-            	
-                //System.out.println(new NeuralNet(new double[28*28][16], new double[16], new double[16][16], new double[16], new double[16][10], new double[10]).calculateCost(image, label));
 
             }
 

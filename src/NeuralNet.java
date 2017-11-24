@@ -34,8 +34,6 @@ public class NeuralNet {
 	}
 
 	public static NeuralNet generate() throws IOException{
-		//String outFileName = "startingNet.in";
-		//PrintWriter out = null;
 		Scanner scan = new Scanner(new File("startingNet.in"));
 		
 		double[][] layer1Weights = new double[28*28][16];
@@ -92,7 +90,7 @@ public class NeuralNet {
 			}
 			layer1[i] = sigmoid(x + layer1Biases[i]);
 		}
-
+		// evaluate layer 2 neurons
 		for (int i = 0; i < layer2.length; i++) {
 			int x = 0;
 			for (int j = 0; j < layer1.length; j++) {
@@ -100,7 +98,7 @@ public class NeuralNet {
 			}
 			layer2[i] = sigmoid(x + layer2Biases[i]);
 		}
-
+		// evaluate layer 3 neurons
 		for (int i = 0; i < output.length; i++) {
 			int x = 0;
 			for (int j = 0; j < layer2.length; j++) {
@@ -108,9 +106,6 @@ public class NeuralNet {
 			}
 			output[i] = sigmoid(x + outputBiases[i]);
 		}
-		//  1    2    3    4 
-		//  1    0    1    0
-		//  0    1    0    0
 		
 		// calculate cost based on outputs vs. actual answer
 		double cost = 0;
