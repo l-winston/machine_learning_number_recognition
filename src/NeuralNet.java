@@ -31,7 +31,7 @@ public class NeuralNet {
 		for (int i = 0; i < 28; i++) {
 			for (int j = 0; j < 28; j++) {
 				Color c = new Color(image.getRGB(j, i));
-				input[j + 28 * i] = sigmoid(255 - c.getRed());
+				input[j + 28 * i] = (255 - c.getRed())/255;
 			}
 		}
 
@@ -59,7 +59,10 @@ public class NeuralNet {
 			}
 			output[i] = sigmoid(x + outputBiases[i]);
 		}
-
+		//  1    2    3    4 
+		//  1    0    1    0
+		//  0    1    0    0
+		
 		// calculate cost based on outputs vs. actual answer
 		double cost = 0;
 		for (int i = 0; i < output.length; i++) {
@@ -67,7 +70,6 @@ public class NeuralNet {
 				cost += Math.pow((output[i] - 1), 2);
 			else
 				cost += Math.pow((output[i] - 0), 2);
-
 		}
 		return cost;
 	}
