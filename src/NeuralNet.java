@@ -74,7 +74,7 @@ public class NeuralNet {
     	return new NeuralNet(layer1Weights, layer1Biases, layer2Weights, layer2Biases, outputWeights, outputBiases);
 	}
 	
-	public static double[] calculateCost(BufferedImage image, int label) {
+	public static double calculateCost(BufferedImage image, int label) {
 		for (int i = 0; i < 28; i++) {
 			for (int j = 0; j < 28; j++) {
 				Color c = new Color(image.getRGB(j, i));
@@ -108,17 +108,17 @@ public class NeuralNet {
 		}
 		
 		// calculate cost based on outputs vs. actual answer
-		double cost[] = new double[output.length];
+		double cost = 0;
 		for (int i = 0; i < output.length; i++) {
 			if (i == label)
-				cost[i] = Math.pow((output[i] - 1), 2);
+				cost += Math.pow((output[i] - 1), 2);
 			else
-				cost[i] = Math.pow((output[i] - 0), 2);
+				cost += Math.pow((output[i] - 0), 2);
 		}
 		return cost;
 	}
 	
-	public static NetworkChange findChange (double[] cost){
+	public static NetworkChange findChange (double cost){
 		return null;
 	}
 	
