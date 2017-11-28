@@ -1,16 +1,12 @@
 public class Matrix {
 	double[][] matrix;
-	public static int columns;
-	public static int rows;
 
 	public Matrix(double[][] matrix) {
-		Matrix.rows = matrix.length;
-		Matrix.columns = matrix[0].length;
 
-		this.matrix = new double[rows][columns];
+		this.matrix = new double[matrix.length][matrix[0].length];
 
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
 				this.matrix[i][j] = matrix[i][j];
 			}
 		}
@@ -20,18 +16,14 @@ public class Matrix {
 		return matrix;
 	}
 
-	public void print() {
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < columns; j++) {
-				System.out.print(matrix[i][j] + " ");
-			}
-			System.out.println();
-		}
-		System.out.println(rows + " Matrix.print() " + columns);
-	}
 
 	public Matrix add(Matrix m) {
-		if (columns != m.columns || rows != m.rows) {
+		int rows = matrix.length;
+		int columns = matrix[0].length;
+		int mrows = m.matrix.length;
+		int mcolumns = m.matrix[0].length;
+		
+		if (columns != mcolumns || rows != mrows) {
 			throw new IllegalArgumentException("Dimenstions are different");
 		}
 		double[][] ret = new double[rows][columns];
@@ -44,9 +36,14 @@ public class Matrix {
 	}
 
 	public Matrix multiply(Matrix m) {
-		if (matrix[0].length != m.matrix.length) {
+		int rows = matrix.length;
+		int columns = matrix[0].length;
+		int mrows = m.matrix.length;
+		int mcolumns = m.matrix[0].length;
+		
+		if (columns != mrows) {
 			throw new IllegalArgumentException(
-					"Matrix A.columns =/= Matrix B.rows : " + this.columns + " =/= " + m.rows);
+					"Matrix A.columns =/= Matrix B.rows : " + columns + " =/= " + mrows);
 		}
 
 		double[][] ret = new double[matrix.length][m.matrix[0].length];
@@ -60,36 +57,38 @@ public class Matrix {
 				ret[i][j] = x;
 			}
 		}
-
+		
 		return new Matrix(ret);
 	}
 
-	public Matrix multiply(double scalar) {
-		double[][] ret = new double[this.rows][this.columns];
-		for (int i = 0; i < this.rows; i++) {
-			for (int j = 0; j < this.columns; j++) {
+	public double[][] multiply(double scalar) {
+		int rows = matrix.length;
+		int columns = matrix[0].length;
+		
+		double[][] ret = new double[rows][columns];
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				ret[i][j] *= scalar;
 			}
 		}
-		return new Matrix(ret);
+		return ret;
 	}
 
 	public static Matrix sigmoid(Matrix m) {
-		double[][] ret = new double[m.rows][m.columns];
+		int rows = m.matrix.length;
+		int columns = m.matrix[0].length;
+		
+		double[][] ret = new double[rows][columns];
 
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				ret[i][j] = NeuralNet.sigmoid(ret[i][j]);
+				ret[i][j] = NeuralNet.sigmoid(m.matrix[i][j]);
 			}
 		}
-		return new Matrix(ret);
+		return new Matrix (ret);
 	}
 
-	public Matrix subtract(Matrix m) {
-		return this.add(m.multiply(-1));
-	}
-
-	public Matrix divide(double scalar) {
+	public double[][] divide(double scalar) {
 		return this.multiply(1 / scalar);
 	}
 

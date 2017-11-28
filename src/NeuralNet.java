@@ -84,20 +84,24 @@ public class NeuralNet {
 		}
 		
 		input = temp;
-		
+
 //		matrix multiplication to solve for layers, makes sense but for some reason is MUCH slower and provides different results
 		
 		//evaluate layer 1 activations
 		layer1 = Matrix.sigmoid(new Matrix(layer1Weights).multiply(new Matrix (input))).matrix;
 		//evaluate layer 2 activations
-		layer2 = new Matrix(layer2Weights).multiply(new Matrix (layer1)).matrix;
+		layer2 = Matrix.sigmoid(new Matrix(layer2Weights).multiply(new Matrix (layer1))).matrix;
 		//evaluate layer 3 activations
-		output = new Matrix(outputWeights).multiply(new Matrix (layer2)).matrix;
+		output = Matrix.sigmoid(new Matrix(outputWeights).multiply(new Matrix (layer2))).matrix;
 
+//		for(int i = 0; i < 10; i++){
+//			System.out.print(output[i][0] + " ");
+//		}
+//		System.out.println();
 		
 		// calculate cost based on outputs vs. actual answer
 		double cost = 0;
-		for (int i = 0; i < output.length; i++) {
+		for (int i = 0; i < 10; i++) {
 			if (i == label)
 				cost += Math.pow((output[i][0] - 1), 2);
 			else
@@ -127,7 +131,7 @@ public class NeuralNet {
 			d = 5;
 		if (d < -5)
 			d = -5;
-
-		return (1) / (1 + Math.pow(Math.E, -1 * d));
+		double ret = (1.0) / (1 + Math.pow(Math.E, (-1 * d)));
+		return ret;
 	}
 }
