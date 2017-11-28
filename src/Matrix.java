@@ -12,11 +12,6 @@ public class Matrix {
 		}
 	}
 
-	public double[][] get2DArray() {
-		return matrix;
-	}
-
-
 	public Matrix add(Matrix m) {
 		int rows = matrix.length;
 		int columns = matrix[0].length;
@@ -29,7 +24,7 @@ public class Matrix {
 		double[][] ret = new double[rows][columns];
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				ret[i][j] = matrix[i][j] + m.get2DArray()[i][j];
+				ret[i][j] = matrix[i][j] + m.matrix[i][j];
 			}
 		}
 		return new Matrix(ret);
