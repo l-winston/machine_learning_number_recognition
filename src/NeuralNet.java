@@ -6,132 +6,122 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.Scanner;
 
 public class NeuralNet {
 
-	public final static double[] input = new double[28 * 28];
-	public final static double[] layer1 = new double[16];
-	public final static double[] layer2 = new double[16];
-	public final static double[] output = new double[10];
+	public static double[][] input = new double[28*28][1];
+	public static double[][] layer1 = new double[16][1];
+	public static double[][] layer2 = new double[16][1];
+	public static double[][] output = new double[10][1];
 
-	public static double[][] layer1Weights = new double[input.length][layer1.length];
-	public static double[] layer1Biases = new double[layer1.length];
-	public static double[][] layer2Weights = new double[layer1.length][layer2.length];
-	public static double[] layer2Biases = new double[layer2.length];
-	public static double[][] outputWeights = new double[layer2.length][output.length];
-	public static double[] outputBiases = new double[output.length];
+	public static double[][] layer1Weights = new double[16][28*28];
+	public static double[][] layer1Biases = new double[16][1];
+	public static double[][] layer2Weights = new double[16][16];
+	public static double[][] layer2Biases = new double[16][1];
+	public static double[][] outputWeights = new double[10][16];
+	public static double[][] outputBiases = new double[10][1];
 
-	public NeuralNet(double[][] layer1Weights, double[] layer1Biases, double[][] layer2Weights, double[] layer2Biases,
-			double[][] outputWeights, double[] outputBiases) {
+	public NeuralNet(double[][] layer1Weights, double[][] layer1Biases, double[][] layer2Weights, double[][] layer2Biases,
+			double[][] outputWeights, double[][] outputBiases) {
+
 		this.layer1Weights = layer1Weights;
 		this.layer1Biases = layer1Biases;
 		this.layer2Weights = layer2Weights;
 		this.layer2Biases = layer2Biases;
 		this.outputWeights = outputWeights;
 		this.outputBiases = outputBiases;
+
 	}
 
-	public static NeuralNet generate() throws IOException{
+	public static NeuralNet generate() throws IOException {
 		Scanner scan = new Scanner(new File("startingNet.in"));
+
+		double[][] l1w = new double[16][28*28];
+		double[][] l1b = new double[16][1];
+		double[][] l2w = new double[16][16];
+		double[][] l2b = new double[16][1];
+		double[][] ow = new double[10][16];
+		double[][] ob = new double[10][1];
+
+		for (int j = 0; j < 16; j++) {
+			for (int k = 0; k < 28*28; k++) {
+				l1w[j][k] = scan.nextDouble();
+			}
+		}
+		for (int j = 0; j < 16; j++) {
+			l1b[j][0] = scan.nextDouble();
+		}
+		for (int j = 0; j < 16; j++) {
+			for (int k = 0; k < 16; k++) {
+				l2w[j][k] = scan.nextDouble();
+			}
+		}
+		for (int j = 0; j < 16; j++) {
+			l2b[j][0] = scan.nextDouble();
+		}
+		for (int j = 0; j < 10; j++) {
+			for (int k = 0; k < 16; k++) {
+				ow[j][k] = scan.nextDouble();
+			}
+		}
+		for (int j = 0; j < 10; j++) {
+			ob[j][0] = scan.nextDouble();
+		}
+		scan.close();
 		
-		double[][] layer1Weights = new double[28*28][16];
-    	double[] layer1Biases = new double[16];
-    	double[][] layer2Weights = new double[16][16];
-    	double[] layer2Biases = new double[16];
-    	double[][] outputWeights = new double[16][10];
-    	double[] outputBiases = new double[10];
-    	
-    	Random rand = new Random();
-    	
-    	for(int j = 0; j < 28*28; j++){
-    		for(int k = 0; k < 16; k++){
-    			layer1Weights[j][k] = scan.nextDouble();
-    		}
-    	}
-    	for(int j = 0; j < 16; j++){
-    		layer1Biases[j] = scan.nextDouble();
-    	}
-    	for(int j = 0; j < 16; j++){
-    		for(int k = 0; k < 16; k++){
-    			layer2Weights[j][k] = scan.nextDouble();
-    		}
-    	}
-    	for(int j = 0; j < 16; j++){
-    		layer2Biases[j] = scan.nextDouble();
-    	}
-    	for(int j = 0; j < 16; j++){
-    		for(int k = 0; k < 10; k++){
-    			outputWeights[j][k] = scan.nextDouble();
-    		}
-    	}
-    	for(int j = 0; j < 10; j++){
-    		outputBiases[j] = scan.nextDouble();
-    	}
-    	scan.close();
-    	
-    	return new NeuralNet(layer1Weights, layer1Biases, layer2Weights, layer2Biases, outputWeights, outputBiases);
+		return new NeuralNet(l1w, l1b, l2w, l2b, ow, ob);
 	}
-	
+
 	public static double calculateCost(BufferedImage image, int label) {
+		//feed 28x28 greyscale image into 784x1 input matrix
+		double[][] temp = new double[28 * 28][1];
 		for (int i = 0; i < 28; i++) {
 			for (int j = 0; j < 28; j++) {
 				Color c = new Color(image.getRGB(j, i));
-				input[j + 28 * i] = (255 - c.getRed())/255;
+				temp[j + 28 * i][0] = (255 - c.getRed()) / 255.0;
 			}
 		}
+		
+		input = temp;
+		
+//		matrix multiplication to solve for layers, makes sense but for some reason is MUCH slower and provides different results
+		
+		//evaluate layer 1 activations
+		layer1 = Matrix.sigmoid(new Matrix(layer1Weights).multiply(new Matrix (input))).matrix;
+		//evaluate layer 2 activations
+		layer2 = new Matrix(layer2Weights).multiply(new Matrix (layer1)).matrix;
+		//evaluate layer 3 activations
+		output = new Matrix(outputWeights).multiply(new Matrix (layer2)).matrix;
 
-		// evaluate layer 1 neurons
-		for (int i = 0; i < layer1.length; i++) {
-			int x = 0;
-			for (int j = 0; j < input.length; j++) {
-				x += input[j] * layer1Weights[j][i];
-			}
-			layer1[i] = sigmoid(x + layer1Biases[i]);
-		}
-		// evaluate layer 2 neurons
-		for (int i = 0; i < layer2.length; i++) {
-			int x = 0;
-			for (int j = 0; j < layer1.length; j++) {
-				x += layer1[j] * layer2Weights[j][i];
-			}
-			layer2[i] = sigmoid(x + layer2Biases[i]);
-		}
-		// evaluate layer 3 neurons
-		for (int i = 0; i < output.length; i++) {
-			int x = 0;
-			for (int j = 0; j < layer2.length; j++) {
-				x += layer2[j] * outputWeights[j][i];
-			}
-			output[i] = sigmoid(x + outputBiases[i]);
-		}
 		
 		// calculate cost based on outputs vs. actual answer
 		double cost = 0;
 		for (int i = 0; i < output.length; i++) {
 			if (i == label)
-				cost += Math.pow((output[i] - 1), 2);
+				cost += Math.pow((output[i][0] - 1), 2);
 			else
-				cost += Math.pow((output[i] - 0), 2);
+				cost += Math.pow((output[i][0] - 0), 2);
 		}
 		return cost;
 	}
-	
-	public static NetworkChange findChange (double cost){
+
+	public static NetworkChange findChange(double cost) {
+		//TODO: put backpropagation here
 		return null;
 	}
-	
-	public static void applyStep (NetworkChange nc){
-		layer1Weights = (new Matrix(layer1Weights).add(new Matrix(nc.layer1Weights))).get2DArray();
-		layer1Biases = (Matrix.toMatrix(layer1Biases).add(Matrix.toMatrix(nc.layer1Biases))).get1DArray();
-		layer2Weights = (new Matrix(layer2Weights).add(new Matrix(nc.layer2Weights))).get2DArray();
-		layer2Biases = (Matrix.toMatrix(layer2Biases).add(Matrix.toMatrix(nc.layer2Biases))).get1DArray();
-		outputWeights = (new Matrix(outputWeights).add(new Matrix(nc.outputWeights))).get2DArray();
-		outputBiases = (Matrix.toMatrix(outputBiases).add(Matrix.toMatrix(nc.outputBiases))).get1DArray();
+
+	public static void applyStep(NetworkChange nc) {
+		/*layer1Weights = layer1Weights.add(nc.layer1Weights);
+		layer1Biases = layer1Biases.add(nc.layer1Biases);
+		layer2Weights = layer2Weights.add(nc.layer2Weights);
+		layer2Biases = layer2Biases.add(nc.layer2Biases);
+		outputWeights = outputWeights.add(nc.outputWeights);
+		outputBiases = outputBiases.add(nc.outputBiases);*/
 
 	}
-
+	
+	//if d > 5 || d 
 	public static double sigmoid(double d) {
 		if (d > 5)
 			d = 5;

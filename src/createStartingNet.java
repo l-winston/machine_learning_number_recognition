@@ -11,7 +11,10 @@ public class createStartingNet {
 		Random rand = new Random();
 		
 		for(int i = 0; i < 13002; i++){
-			out.print(rand.nextDouble()*50 - 25 + " ");
+			double randomDouble = rand.nextDouble()*10 - 5;
+			int j = (int) (randomDouble*1000);
+			randomDouble = j/1000.0;
+			out.print(randomDouble + " ");
 		}
 		
 		out.close();
