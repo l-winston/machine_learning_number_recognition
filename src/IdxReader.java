@@ -57,17 +57,19 @@ public class IdxReader {
 			int batchInterval = BATCH_SIZE;
 
 			NeuralNet net = NeuralNet.generate();
-			//NetworkChange batchStep = new NetworkChange(); //start with an empty batchStep
+			NetworkChange batchStep = new NetworkChange(); //start with an empty batchStep
 
 			for (int i = 0; i < numberOfImages; i++) {
 
 				//after a batch is completed, find average, calculate where the next batch ends, and reset average back to 0
-				if (i % batchInterval == 0) {
+				if (i % batchInterval == 0 && i != 0) {
 					avgCost /= BATCH_SIZE;
+					System.out.println("--------------------------------------------------");
 					System.out.println(avgCost);
+					System.out.println("--------------------------------------------------");
 					avgCost = 0;
-					//net.applyStep(batchStep);
-					//batchStep = new NetworkChange();
+					net.applyStep(batchStep);
+					batchStep = new NetworkChange();
 				}
 
 				if (i % 100 == 0) {
@@ -87,10 +89,12 @@ public class IdxReader {
 				frame.invalidate();
 				frame.validate();
 				frame.getContentPane().add(new JLabel(new ImageIcon(image)));
-				avgCost += net.calculateCost(image, label);
-
 				
-				//batchStep = batchStep.add(net.findChange(net.calculateCost(image, label)));
+				double cost = net.calculateCost(image, label);
+				
+				avgCost += cost;
+
+				batchStep = batchStep.add(net.findChange(cost));
 
 			}
 

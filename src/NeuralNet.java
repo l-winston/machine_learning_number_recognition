@@ -93,11 +93,6 @@ public class NeuralNet {
 		layer2 = Matrix.sigmoid(new Matrix(layer2Weights).multiply(new Matrix (layer1))).matrix;
 		//evaluate layer 3 activations
 		output = Matrix.sigmoid(new Matrix(outputWeights).multiply(new Matrix (layer2))).matrix;
-
-//		for(int i = 0; i < 10; i++){
-//			System.out.print(output[i][0] + " ");
-//		}
-//		System.out.println();
 		
 		// calculate cost based on outputs vs. actual answer
 		double cost = 0;
@@ -106,7 +101,9 @@ public class NeuralNet {
 				cost += Math.pow((output[i][0] - 1), 2);
 			else
 				cost += Math.pow((output[i][0] - 0), 2);
+			//System.out.println(output[i][0]);
 		}
+		//System.out.println();
 		return cost;
 	}
 
@@ -116,12 +113,12 @@ public class NeuralNet {
 	}
 
 	public static void applyStep(NetworkChange nc) {
-		/*layer1Weights = layer1Weights.add(nc.layer1Weights);
-		layer1Biases = layer1Biases.add(nc.layer1Biases);
-		layer2Weights = layer2Weights.add(nc.layer2Weights);
-		layer2Biases = layer2Biases.add(nc.layer2Biases);
-		outputWeights = outputWeights.add(nc.outputWeights);
-		outputBiases = outputBiases.add(nc.outputBiases);*/
+		layer1Weights = new Matrix(layer1Weights).add(new Matrix(nc.layer1Weights)).matrix;
+		layer1Biases = new Matrix(layer1Biases).add(new Matrix(nc.layer1Biases)).matrix;
+		layer2Weights = new Matrix(layer2Weights).add(new Matrix(nc.layer2Weights)).matrix;
+		layer2Biases = new Matrix(layer2Biases).add(new Matrix(nc.layer2Biases)).matrix;
+		outputWeights = new Matrix(outputWeights).add(new Matrix(nc.outputWeights)).matrix;
+		outputBiases = new Matrix(outputBiases).add(new Matrix(nc.outputBiases)).matrix;
 
 	}
 	
@@ -132,6 +129,7 @@ public class NeuralNet {
 		if (d < -5)
 			d = -5;
 		double ret = (1.0) / (1 + Math.pow(Math.E, (-1 * d)));
+		//System.out.println(d + "\t" + ret);
 		return ret;
 	}
 }
