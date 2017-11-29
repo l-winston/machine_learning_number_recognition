@@ -29,6 +29,18 @@ public class NetworkChange {
 		this.outputBiases = nc.outputBiases;
 	}
 	
+	public static NetworkChange divide(double scalar){
+
+		return new NetworkChange(
+				new Matrix(layer1Weights).divide(scalar),
+				new Matrix(layer1Biases).divide(scalar),
+				new Matrix(layer2Weights).divide(scalar),
+				new Matrix(layer2Biases).divide(scalar),
+				new Matrix(outputWeights).divide(scalar),
+				new Matrix(outputBiases).divide(scalar)
+				);
+	}
+	
 	public static NetworkChange add(NetworkChange nc){
 
 		return new NetworkChange(

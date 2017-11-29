@@ -64,6 +64,7 @@ public class IdxReader {
 				//after a batch is completed, find average, calculate where the next batch ends, and reset average back to 0
 				if (i % batchInterval == 0 && i != 0) {
 					avgCost /= BATCH_SIZE;
+					batchStep = new NetworkChange(batchStep.divide(BATCH_SIZE));
 					System.out.println("--------------------------------------------------");
 					System.out.println(avgCost);
 					System.out.println("--------------------------------------------------");
@@ -86,19 +87,13 @@ public class IdxReader {
 				hashMap[label]++;
 				
 				//reset frame and show the image
-				frame.invalidate();
-				frame.validate();
-				frame.getContentPane().add(new JLabel(new ImageIcon(image)));
+//				frame.invalidate();
+//				frame.validate();
+//				frame.getContentPane().add(new JLabel(new ImageIcon(image)));
 				
 				double cost = net.calculateCost(image, label);
 				
 				avgCost += cost;
-				
-//				System.out.print("[");
-//				for(int z = 0; z < net.findChange(label).outputWeights.length; z++){
-//					System.out.print(net.findChange(label).outputWeights[z][0] + ", ");
-//				}
-//				System.out.println("]");
 				
 				batchStep = new NetworkChange(batchStep.add(net.findChange(label)));
 

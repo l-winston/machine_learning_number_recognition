@@ -63,7 +63,7 @@ public class Matrix {
 		double[][] ret = new double[rows][columns];
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {
-				ret[i][j] *= scalar;
+				ret[i][j] = matrix[i][j] * scalar;
 			}
 		}
 		return ret;
@@ -84,7 +84,7 @@ public class Matrix {
 	}
 
 	public double[][] divide(double scalar) {
-		return this.multiply(1 / scalar);
+		return this.multiply(1.0 / scalar);
 	}
 
 }
