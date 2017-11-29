@@ -156,4 +156,38 @@ public class NeuralNet {
 		//System.out.println(d + "\t" + ret);
 		return ret;
 	}
+	
+	public void print (PrintWriter out){
+		for(int i = 0; i < layer1Weights.length; i++){
+			for(int j = 0; j < layer1Weights[0].length; j++){
+				out.print(layer1Weights[i][j] + " ");
+			}
+		}
+		for(int i = 0; i < layer1Biases.length; i++){
+			for(int j = 0; j < layer1Biases[0].length; j++){
+				out.print(layer1Biases[i][j] + " ");
+			}
+		}
+		for(int i = 0; i < layer2Weights.length; i++){
+			for(int j = 0; j < layer2Weights[0].length; j++){
+				out.print(layer2Weights[i][j] + " ");
+			}
+		}
+		for(int i = 0; i < layer2Biases.length; i++){
+			for(int j = 0; j < layer2Biases[0].length; j++){
+				out.print(layer2Biases[i][j] + " ");
+			}
+		}
+		for(int i = 0; i < outputWeights.length; i++){
+			for(int j = 0; j < outputWeights[0].length; j++){
+				out.print(outputWeights[i][j] + " ");
+			}
+		}
+		for(int i = 0; i < outputBiases.length; i++){
+			for(int j = 0; j < outputBiases[0].length; j++){
+				out.print(outputBiases[i][j] + " ");
+			}
+		}
+		out.close();
+	}
 }

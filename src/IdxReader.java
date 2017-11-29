@@ -1,7 +1,9 @@
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 //import javax.swing.ImageIcon;
 //import javax.swing.JFrame;
@@ -95,7 +97,8 @@ public class IdxReader {
 				batchStep = new NetworkChange(batchStep.add(net.findChange(label)));
 
 			}
-			
+			PrintWriter out = new PrintWriter(new File("bestNet.out"));
+			net.print(out);
 			//print net to "bestNet.out"
 
 		} catch (FileNotFoundException e) {
