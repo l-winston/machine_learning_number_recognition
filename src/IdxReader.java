@@ -1,14 +1,11 @@
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+//import javax.swing.ImageIcon;
+//import javax.swing.JFrame;
+//import javax.swing.JLabel;
 
 public class IdxReader {
 
@@ -22,11 +19,11 @@ public class IdxReader {
 		String inputImagePath = "train-images-idx3-ubyte";
 		String inputLabelPath = "train-labels-idx1-ubyte";
 
-		JFrame frame = new JFrame("frame");
-		frame.pack();// ???
-		frame.setVisible(true);
-		frame.setSize(new java.awt.Dimension(200, 200));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// exit when frame
+		//JFrame frame = new JFrame("frame");
+		//frame.pack();// ???
+		//frame.setVisible(true);
+		//frame.setSize(new java.awt.Dimension(200, 200));
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// exit when frame
 
 		int[] hashMap = new int[10];
 
@@ -98,6 +95,8 @@ public class IdxReader {
 				batchStep = new NetworkChange(batchStep.add(net.findChange(label)));
 
 			}
+			
+			//print net to "bestNet.out"
 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

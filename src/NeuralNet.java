@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class NeuralNet {
-	public static final double ε = Math.pow(10, 1); //Hyperparamater called ε (epsilon) see>Bayesian statistics
+	public static final double ε = Math.pow(10, 2); //Hyperparamater called ε (epsilon) see>Bayesian statistics
 	
 	public static double[][] input = new double[28*28][1];
 	public static double[][] layer1 = new double[16][1];
@@ -118,9 +118,17 @@ public class NeuralNet {
 		for(int j = 0; j < outputWeights.length; j++){
 			for(int k = 0; k < outputWeights[0].length; k++){
 				double activiationK = layer2[k][0];
-				double Z = 0;
-				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z)); //TODO: figure out σ vs. σ' and implement HERE
+				
+				double [] temp = new double[outputWeights[0].length];
+				temp = outputWeights[j];
+				double temp1 [][] = new double[1][outputWeights[0].length];
+				temp1[0] = temp;
+				double Z = new Matrix(temp1).multiply(new Matrix(layer2)).matrix[0][0];
+								
+				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
+				
 				double dCOSTdOutput = 2*(layer2[j][0] - y[j]);
+				
 				double dCOSTdWeight = activiationK * sigmoidZderivative * dCOSTdOutput;
 				ow_c[j][k] = -1 * dCOSTdWeight * ε;
 			}
