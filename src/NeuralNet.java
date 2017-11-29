@@ -9,7 +9,8 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class NeuralNet {
-
+	public static final double ε = Math.pow(10, 0); //Hyperparamater called ε (epsilon) see>Bayesian statistics
+	
 	public static double[][] input = new double[28*28][1];
 	public static double[][] layer1 = new double[16][1];
 	public static double[][] layer2 = new double[16][1];
@@ -107,8 +108,25 @@ public class NeuralNet {
 		return cost;
 	}
 
-	public static NetworkChange findChange(double cost) {
-		//TODO: put backpropagation here
+	public static NetworkChange findChange(int label) {
+		double[] y = new double[output.length]; //desired output
+		y[label] = 1;
+		
+		double[][] l1w_c = new double[layer1Weights.length][layer1Weights[0].length];
+		
+		//start with outputs (Backpropagation)
+		for(int j = 0; j < outputWeights.length; j++){
+			for(int k = 0; k < outputWeights[0].length; k++){
+				double Akl_1 = layer2[k][0];
+				double sig_Zjl = sigmoid(999999999); //TODO: figure out σ vs. σ' and implement HERE
+				double dCdAjl = 0;
+				for(int i = 0; i < output.length; i++){
+					dCdAjl += 2*(output[i][0] - y[i]);
+				}
+				double dCdWjk = Akl_1 * sig_Zjl * dCdAjl;
+				l1w_c[j][k] = -1 * dCdWjk * ε;
+			}
+		}
 		return null;
 	}
 
