@@ -90,11 +90,17 @@ public class IdxReader {
 				frame.validate();
 				frame.getContentPane().add(new JLabel(new ImageIcon(image)));
 				
-				avgCost += net.calculateCost(image, label);
-
-				batchStep = batchStep.add(net.findChange(label));
-
-
+				double cost = net.calculateCost(image, label);
+				
+				avgCost += cost;
+				
+//				System.out.print("[");
+//				for(int z = 0; z < net.findChange(label).outputWeights.length; z++){
+//					System.out.print(net.findChange(label).outputWeights[z][0] + ", ");
+//				}
+//				System.out.println("]");
+				
+				batchStep = new NetworkChange(batchStep.add(net.findChange(label)));
 
 			}
 

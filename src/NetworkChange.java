@@ -20,7 +20,14 @@ public class NetworkChange {
 		
 	}
 	
-
+	public NetworkChange (NetworkChange nc){
+		this.layer1Weights = nc.layer1Weights;
+		this.layer1Biases = nc.layer1Biases;
+		this.layer2Weights = nc.layer2Weights;
+		this.layer2Biases = nc.layer2Biases;
+		this.outputWeights = nc.outputWeights;
+		this.outputBiases = nc.outputBiases;
+	}
 	
 	public static NetworkChange add(NetworkChange nc){
 

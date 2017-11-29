@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class NeuralNet {
-	public static final double ε = Math.pow(10, 0); //Hyperparamater called ε (epsilon) see>Bayesian statistics
+	public static final double ε = Math.pow(10, 1); //Hyperparamater called ε (epsilon) see>Bayesian statistics
 	
 	public static double[][] input = new double[28*28][1];
 	public static double[][] layer1 = new double[16][1];
@@ -112,22 +112,20 @@ public class NeuralNet {
 		double[] y = new double[output.length]; //desired output
 		y[label] = 1;
 		
-		double[][] l1w_c = new double[layer1Weights.length][layer1Weights[0].length];
+		double[][] ow_c = new double[outputWeights.length][outputWeights[0].length];
 		
 		//start with outputs (Backpropagation)
 		for(int j = 0; j < outputWeights.length; j++){
 			for(int k = 0; k < outputWeights[0].length; k++){
-				double Akl_1 = layer2[k][0];
-				double sig_Zjl = sigmoid(999999999); //TODO: figure out σ vs. σ' and implement HERE
-				double dCdAjl = 0;
-				for(int i = 0; i < output.length; i++){
-					dCdAjl += 2*(output[i][0] - y[i]);
-				}
-				double dCdWjk = Akl_1 * sig_Zjl * dCdAjl;
-				l1w_c[j][k] = -1 * dCdWjk * ε;
+				double activiationK = layer2[k][0];
+				double Z = 0;
+				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z)); //TODO: figure out σ vs. σ' and implement HERE
+				double dCOSTdOutput = 2*(layer2[j][0] - y[j]);
+				double dCOSTdWeight = activiationK * sigmoidZderivative * dCOSTdOutput;
+				ow_c[j][k] = -1 * dCOSTdWeight * ε;
 			}
 		}
-		return null;
+		return new NetworkChange(new double[16][28*28], new double[16][1], new double[16][16], new double[16][1], ow_c, new double[10][1]);
 	}
 
 	public static void applyStep(NetworkChange nc) {
