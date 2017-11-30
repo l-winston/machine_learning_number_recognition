@@ -28,7 +28,7 @@ public class IdxReader {
 		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// exit when frame
 
 		int[] hashMap = new int[10];
-
+		
 		try {
 			inImage = new FileInputStream(inputImagePath);
 			inLabel = new FileInputStream(inputLabelPath);
@@ -52,27 +52,35 @@ public class IdxReader {
 			int[] imgPixels = new int[numberOfPixels];
 
 			double avgCost = 0;
+			double batchSuccess = 0;
+			double totalSuccess = 0;;
 
 			int batchInterval = BATCH_SIZE;
 
 			NeuralNet net = NeuralNet.generate();
 			NetworkChange batchStep = new NetworkChange(); //start with an empty batchStep
+			
+			System.out.println("--------------------------------------------------");
 
 			for (int i = 0; i < numberOfImages; i++) {
 
 				//after a batch is completed, find average, calculate where the next batch ends, and reset average back to 0
 				if (i % batchInterval == 0 && i != 0) {
 					avgCost /= BATCH_SIZE;
+					batchSuccess /= BATCH_SIZE;
 					batchStep = new NetworkChange(batchStep.divide(BATCH_SIZE));
+					
+					System.out.println(avgCost + "\t" + Math.round(batchSuccess*100*10)/10d + "%" + "\t" + "Avg Success: "+ Math.round(totalSuccess/i*100*10)/10d + "%");
 					System.out.println("--------------------------------------------------");
-					System.out.println(avgCost);
-					System.out.println("--------------------------------------------------");
+					
 					avgCost = 0;
+					batchSuccess = 0;
+					
 					net.applyStep(batchStep);
 					batchStep = new NetworkChange();
 				}
 
-				if (i % 100 == 0) {
+				if (i % BATCH_SIZE == 0) {
 					System.out.println("Number of images extracted: " + i);
 				}
 
@@ -95,6 +103,9 @@ public class IdxReader {
 				avgCost += cost;
 				
 				batchStep = new NetworkChange(batchStep.add(net.findChange(label)));
+				
+				batchSuccess += net.success(label);
+				totalSuccess += net.success(label);
 
 			}
 			PrintWriter out = new PrintWriter(new File("bestNet.out"));

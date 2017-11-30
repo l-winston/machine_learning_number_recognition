@@ -112,7 +112,7 @@ public class NeuralNet {
 		double[] y = new double[output.length]; //desired output
 		y[label] = 1;
 		
-		double[][] ow_c = new double[outputWeights.length][outputWeights[0].length];
+		double[][] ow_c = new double[outputWeights.length][outputWeights[0].length]; //Output Weight Change (ow_c)
 		
 		//start with outputs (Backpropagation)
 		for(int j = 0; j < outputWeights.length; j++){
@@ -156,7 +156,18 @@ public class NeuralNet {
 		//System.out.println(d + "\t" + ret);
 		return ret;
 	}
-	
+	public double success(int label){
+		int confident = -1;
+		for(int i = 0; i < output.length; i++){
+			if(output[i][0] > confident) confident = i;
+			System.out.print(output[i][0] + " ");
+		}
+		System.out.println();
+		if(confident == label){
+			return 1;
+		}
+		return 0;
+	}
 	public void print (PrintWriter out){
 		for(int i = 0; i < layer1Weights.length; i++){
 			for(int j = 0; j < layer1Weights[0].length; j++){
