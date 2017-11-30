@@ -133,7 +133,7 @@ public class NeuralNet {
 				double activiationK = layer2[k][0];
 
 				double Z = 	outputZ[j][0];
-				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
+				double sigmoidZderivative = sigmoidDerivative(Z);
 
 				double dCOSTdOutput = 2 * (layer2[j][0] - y[j]);
 
@@ -147,13 +147,12 @@ public class NeuralNet {
 				double activiationK = layer1[k][0];
 				
 				double Z = layer2Z[j][0];
-				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
+				double sigmoidZderivative = sigmoidDerivative(Z);
 
 				double dCOSTdOutput = 0;
 				for (int i = 0; i < output.length; i++) {
 					double weight = outputWeights[i][k];
-					double z = layer2Z[i][0];
-					double sigmoidDerivative = sigmoid(z) * (1 - sigmoid(z));
+					double sigmoidDerivative = sigmoidDerivative(layer2Z[i][0]);
 					double dCOSTdOutputLplus1 = 2 * (output[i][0] - y[i]);
 					dCOSTdOutput += weight * sigmoidDerivative * dCOSTdOutputLplus1;
 				}
@@ -162,6 +161,7 @@ public class NeuralNet {
 				l2w_c[j][k] = -1 * dCOSTdWeight * ε;
 			}
 		}
+		
 		return new NetworkChange(new double[16][28 * 28], new double[16][1], l2w_c, new double[16][1], ow_c,
 				new double[10][1]);
 	}
@@ -233,5 +233,8 @@ public class NeuralNet {
 			}
 		}
 		out.close();
+	}
+	public static double sigmoidDerivative(double x){
+		return sigmoid(x) * (1 - sigmoid(x));
 	}
 }
