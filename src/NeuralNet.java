@@ -9,22 +9,29 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class NeuralNet {
-	public static final double ε = Math.pow(10, 2); //Hyperparamater called ε (epsilon) see>Bayesian statistics
-	
-	public static double[][] input = new double[28*28][1];
+	public static final double ε = Math.pow(10, 2); // Hyperparamater called ε
+													// (epsilon) see>Bayesian
+													// statistics
+
+	public static double[][] input = new double[28 * 28][1];
 	public static double[][] layer1 = new double[16][1];
 	public static double[][] layer2 = new double[16][1];
 	public static double[][] output = new double[10][1];
 
-	public static double[][] layer1Weights = new double[16][28*28];
+	public static double[][] inputZ = new double[28 * 28][1];
+	public static double[][] layer1Z = new double[16][1];
+	public static double[][] layer2Z = new double[16][1];
+	public static double[][] outputZ = new double[10][1];
+
+	public static double[][] layer1Weights = new double[16][28 * 28];
 	public static double[][] layer1Biases = new double[16][1];
 	public static double[][] layer2Weights = new double[16][16];
 	public static double[][] layer2Biases = new double[16][1];
 	public static double[][] outputWeights = new double[10][16];
 	public static double[][] outputBiases = new double[10][1];
 
-	public NeuralNet(double[][] layer1Weights, double[][] layer1Biases, double[][] layer2Weights, double[][] layer2Biases,
-			double[][] outputWeights, double[][] outputBiases) {
+	public NeuralNet(double[][] layer1Weights, double[][] layer1Biases, double[][] layer2Weights,
+			double[][] layer2Biases, double[][] outputWeights, double[][] outputBiases) {
 
 		this.layer1Weights = layer1Weights;
 		this.layer1Biases = layer1Biases;
@@ -38,7 +45,7 @@ public class NeuralNet {
 	public static NeuralNet generate() throws IOException {
 		Scanner scan = new Scanner(new File("startingNet.in"));
 
-		double[][] l1w = new double[16][28*28];
+		double[][] l1w = new double[16][28 * 28];
 		double[][] l1b = new double[16][1];
 		double[][] l2w = new double[16][16];
 		double[][] l2b = new double[16][1];
@@ -46,7 +53,7 @@ public class NeuralNet {
 		double[][] ob = new double[10][1];
 
 		for (int j = 0; j < 16; j++) {
-			for (int k = 0; k < 28*28; k++) {
+			for (int k = 0; k < 28 * 28; k++) {
 				l1w[j][k] = scan.nextDouble();
 			}
 		}
@@ -70,12 +77,12 @@ public class NeuralNet {
 			ob[j][0] = scan.nextDouble();
 		}
 		scan.close();
-		
+
 		return new NeuralNet(l1w, l1b, l2w, l2b, ow, ob);
 	}
 
 	public static double calculateCost(BufferedImage image, int label) {
-		//feed 28x28 greyscale image into 784x1 input matrix
+		// feed 28x28 greyscale image into 784x1 input matrix
 		double[][] temp = new double[28 * 28][1];
 		for (int i = 0; i < 28; i++) {
 			for (int j = 0; j < 28; j++) {
@@ -83,18 +90,22 @@ public class NeuralNet {
 				temp[j + 28 * i][0] = (255 - c.getRed()) / 255.0;
 			}
 		}
-		
+
 		input = temp;
 
-//		matrix multiplication to solve for layers, makes sense but for some reason is MUCH slower and provides different results
-		
-		//evaluate layer 1 activations
-		layer1 = Matrix.sigmoid(new Matrix(layer1Weights).multiply(new Matrix (input))).matrix;
-		//evaluate layer 2 activations
-		layer2 = Matrix.sigmoid(new Matrix(layer2Weights).multiply(new Matrix (layer1))).matrix;
-		//evaluate layer 3 activations
-		output = Matrix.sigmoid(new Matrix(outputWeights).multiply(new Matrix (layer2))).matrix;
-		
+		// matrix multiplication to solve for layers, makes sense but for some
+		// reason is MUCH slower and provides different results
+
+		// evaluate layer 1 activations
+		layer1Z = new Matrix(layer1Weights).multiply(new Matrix(input)).matrix;
+		layer1 = Matrix.sigmoid(new Matrix(layer1Z)).matrix;
+		// evaluate layer 2 activations
+		layer2Z = new Matrix(layer2Weights).multiply(new Matrix(layer1)).matrix;
+		layer2 = Matrix.sigmoid(new Matrix(layer2Z)).matrix;
+		// evaluate layer 3 activations
+		outputZ = new Matrix(outputWeights).multiply(new Matrix(layer2)).matrix;
+		output = Matrix.sigmoid(new Matrix(outputZ)).matrix;
+
 		// calculate cost based on outputs vs. actual answer
 		double cost = 0;
 		for (int i = 0; i < 10; i++) {
@@ -102,66 +113,57 @@ public class NeuralNet {
 				cost += Math.pow((output[i][0] - 1), 2);
 			else
 				cost += Math.pow((output[i][0] - 0), 2);
-			//System.out.println(output[i][0]);
+			// System.out.println(output[i][0]);
 		}
-		//System.out.println();
+		// System.out.println();
 		return cost;
 	}
 
 	public static NetworkChange findChange(int label) {
-		double[] y = new double[output.length]; //desired output
+		double[] y = new double[output.length]; // desired output
 		y[label] = 1;
-		
-		double[][] ow_c = new double[outputWeights.length][outputWeights[0].length]; //Output Weight Change (ow_c)
-		double[][] outputZValues = new double[outputWeights.length][1];
-		//start with outputs (Backpropagation)
-		for(int j = 0; j < outputWeights.length; j++){
-			for(int k = 0; k < outputWeights[0].length; k++){
+
+		double[][] ow_c = new double[outputWeights.length][outputWeights[0].length];
+		double[][] l2w_c = new double[layer2Weights.length][layer2Weights[0].length];
+		double[][] l1w_c = new double[layer1Weights.length][layer1Weights[0].length];
+
+		// start with outputs (Backpropagation)
+		for (int j = 0; j < outputWeights.length; j++) {
+			for (int k = 0; k < outputWeights[0].length; k++) {
 				double activiationK = layer2[k][0];
-				
-				double [] temp = new double[outputWeights[0].length];
-				temp = outputWeights[j];
-				double temp1 [][] = new double[1][outputWeights[0].length];
-				temp1[0] = temp;
-				double Z = new Matrix(temp1).multiply(new Matrix(layer2)).matrix[0][0];
-				outputZValues[j][0] = Z;
+
+				double Z = 	outputZ[j][0];
 				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
-				
-				double dCOSTdOutput = 2*(layer2[j][0] - y[j]);
-				
+
+				double dCOSTdOutput = 2 * (layer2[j][0] - y[j]);
+
 				double dCOSTdWeight = activiationK * sigmoidZderivative * dCOSTdOutput;
 				ow_c[j][k] = -1 * dCOSTdWeight * ε;
 			}
 		}
-		
-		double[][] l2w_c = new double[layer2Weights.length][layer2Weights[0].length];
-		double[][] layer2ZValues = new double[layer2Weights.length][1];
-		for(int j = 0; j < layer2Weights.length; j++){
-			for(int k = 0; k < layer2Weights[0].length; k++){
+
+		for (int j = 0; j < layer2Weights.length; j++) {
+			for (int k = 0; k < layer2Weights[0].length; k++) {
 				double activiationK = layer1[k][0];
 				
-				double [] temp = new double[layer2Weights[0].length];
-				temp = layer2Weights[j];
-				double temp1 [][] = new double[1][layer2Weights[0].length];
-				temp1[0] = temp;
-				double Z = new Matrix(temp1).multiply(new Matrix(layer1)).matrix[0][0];
-				layer2ZValues[j][0] = Z;
+				double Z = layer2Z[j][0];
 				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
-				
+
 				double dCOSTdOutput = 0;
-				for(int i = 0; i < output.length; i++){
+				for (int i = 0; i < output.length; i++) {
 					double weight = outputWeights[i][k];
-					double z = outputZValues[i][0];
+					double z = layer2Z[i][0];
 					double sigmoidDerivative = sigmoid(z) * (1 - sigmoid(z));
 					double dCOSTdOutputLplus1 = 2 * (output[i][0] - y[i]);
-					dCOSTdOutput += weight*sigmoidDerivative*dCOSTdOutputLplus1;
+					dCOSTdOutput += weight * sigmoidDerivative * dCOSTdOutputLplus1;
 				}
-				
+
 				double dCOSTdWeight = activiationK * sigmoidZderivative * dCOSTdOutput;
 				l2w_c[j][k] = -1 * dCOSTdWeight * ε;
 			}
 		}
-		return new NetworkChange(new double[16][28*28], new double[16][1], l2w_c, new double[16][1], ow_c, new double[10][1]);
+		return new NetworkChange(new double[16][28 * 28], new double[16][1], l2w_c, new double[16][1], ow_c,
+				new double[10][1]);
 	}
 
 	public static void applyStep(NetworkChange nc) {
@@ -173,57 +175,60 @@ public class NeuralNet {
 		outputBiases = new Matrix(outputBiases).add(new Matrix(nc.outputBiases)).matrix;
 
 	}
-	
-	//if d > 5 || d 
+
+	// if d > 5 || d
 	public static double sigmoid(double d) {
 		if (d > 5)
 			d = 5;
 		if (d < -5)
 			d = -5;
 		double ret = (1.0) / (1 + Math.pow(Math.E, (-1 * d)));
-		//System.out.println(d + "\t" + ret);
+		// System.out.println(d + "\t" + ret);
 		return ret;
 	}
-	public double success(int label){
+
+	public double success(int label) {
 		int confident = -1;
-		for(int i = 0; i < output.length; i++){
-			if(output[i][0] > confident) confident = i;
-			//System.out.print(output[i][0] + " ");
+		for (int i = 0; i < output.length; i++) {
+			if (output[i][0] > confident)
+				confident = i;
+			// System.out.print(output[i][0] + " ");
 		}
-		//System.out.println();
-		if(confident == label){
+		// System.out.println();
+		if (confident == label) {
 			return 1;
 		}
 		return 0;
 	}
-	public void print (PrintWriter out){
-		for(int i = 0; i < layer1Weights.length; i++){
-			for(int j = 0; j < layer1Weights[0].length; j++){
+
+	public void print(PrintWriter out) {
+		for (int i = 0; i < layer1Weights.length; i++) {
+			for (int j = 0; j < layer1Weights[0].length; j++) {
 				out.print(layer1Weights[i][j] + " ");
 			}
 		}
-		for(int i = 0; i < layer1Biases.length; i++){
-			for(int j = 0; j < layer1Biases[0].length; j++){
+		for (int i = 0; i < layer1Biases.length; i++) {
+			for (int j = 0; j < layer1Biases[0].length; j++) {
 				out.print(layer1Biases[i][j] + " ");
 			}
 		}
-		for(int i = 0; i < layer2Weights.length; i++){
-			for(int j = 0; j < layer2Weights[0].length; j++){
+		for (int i = 0; i < layer2Weights.length; i++) {
+			for (int j = 0; j < layer2Weights[0].length; j++) {
 				out.print(layer2Weights[i][j] + " ");
 			}
 		}
-		for(int i = 0; i < layer2Biases.length; i++){
-			for(int j = 0; j < layer2Biases[0].length; j++){
+		for (int i = 0; i < layer2Biases.length; i++) {
+			for (int j = 0; j < layer2Biases[0].length; j++) {
 				out.print(layer2Biases[i][j] + " ");
 			}
 		}
-		for(int i = 0; i < outputWeights.length; i++){
-			for(int j = 0; j < outputWeights[0].length; j++){
+		for (int i = 0; i < outputWeights.length; i++) {
+			for (int j = 0; j < outputWeights[0].length; j++) {
 				out.print(outputWeights[i][j] + " ");
 			}
 		}
-		for(int i = 0; i < outputBiases.length; i++){
-			for(int j = 0; j < outputBiases[0].length; j++){
+		for (int i = 0; i < outputBiases.length; i++) {
+			for (int j = 0; j < outputBiases[0].length; j++) {
 				out.print(outputBiases[i][j] + " ");
 			}
 		}
