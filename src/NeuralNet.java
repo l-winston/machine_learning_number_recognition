@@ -113,7 +113,7 @@ public class NeuralNet {
 		y[label] = 1;
 		
 		double[][] ow_c = new double[outputWeights.length][outputWeights[0].length]; //Output Weight Change (ow_c)
-		
+		double[][] outputZValues = new double[outputWeights.length][1];
 		//start with outputs (Backpropagation)
 		for(int j = 0; j < outputWeights.length; j++){
 			for(int k = 0; k < outputWeights[0].length; k++){
@@ -124,7 +124,7 @@ public class NeuralNet {
 				double temp1 [][] = new double[1][outputWeights[0].length];
 				temp1[0] = temp;
 				double Z = new Matrix(temp1).multiply(new Matrix(layer2)).matrix[0][0];
-								
+				outputZValues[j][0] = Z;
 				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
 				
 				double dCOSTdOutput = 2*(layer2[j][0] - y[j]);
@@ -133,7 +133,35 @@ public class NeuralNet {
 				ow_c[j][k] = -1 * dCOSTdWeight * ε;
 			}
 		}
-		return new NetworkChange(new double[16][28*28], new double[16][1], new double[16][16], new double[16][1], ow_c, new double[10][1]);
+		
+		double[][] l2w_c = new double[layer2Weights.length][layer2Weights[0].length];
+		double[][] layer2ZValues = new double[layer2Weights.length][1];
+		for(int j = 0; j < layer2Weights.length; j++){
+			for(int k = 0; k < layer2Weights[0].length; k++){
+				double activiationK = layer1[k][0];
+				
+				double [] temp = new double[layer2Weights[0].length];
+				temp = layer2Weights[j];
+				double temp1 [][] = new double[1][layer2Weights[0].length];
+				temp1[0] = temp;
+				double Z = new Matrix(temp1).multiply(new Matrix(layer1)).matrix[0][0];
+				layer2ZValues[j][0] = Z;
+				double sigmoidZderivative = sigmoid(Z) * (1 - sigmoid(Z));
+				
+				double dCOSTdOutput = 0;
+				for(int i = 0; i < output.length; i++){
+					double weight = outputWeights[i][k];
+					double z = outputZValues[i][0];
+					double sigmoidDerivative = sigmoid(z) * (1 - sigmoid(z));
+					double dCOSTdOutputLplus1 = 2 * (output[i][0] - y[i]);
+					dCOSTdOutput += weight*sigmoidDerivative*dCOSTdOutputLplus1;
+				}
+				
+				double dCOSTdWeight = activiationK * sigmoidZderivative * dCOSTdOutput;
+				l2w_c[j][k] = -1 * dCOSTdWeight * ε;
+			}
+		}
+		return new NetworkChange(new double[16][28*28], new double[16][1], l2w_c, new double[16][1], ow_c, new double[10][1]);
 	}
 
 	public static void applyStep(NetworkChange nc) {
@@ -160,9 +188,9 @@ public class NeuralNet {
 		int confident = -1;
 		for(int i = 0; i < output.length; i++){
 			if(output[i][0] > confident) confident = i;
-			System.out.print(output[i][0] + " ");
+			//System.out.print(output[i][0] + " ");
 		}
-		System.out.println();
+		//System.out.println();
 		if(confident == label){
 			return 1;
 		}
